@@ -3840,11 +3840,11 @@
 /* ── Locked nav items ── */
 .nav-item.locked{opacity:.3;pointer-events:none}
 /* ── QuickCheck ── */
-.qc-wrap{margin-top:32px;border:1.5px solid var(--accent-line);border-radius:12px;overflow:hidden;background:var(--bg-1)}
-.qc-label{padding:12px 18px 0;display:flex;align-items:center}
-.qc-badge{font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:4px;padding:3px 8px}
-.qc-question{padding:12px 18px 4px;font-size:15px;font-weight:600;color:var(--text-0);line-height:1.5}
-.qc-choices{display:flex;flex-direction:column;gap:8px;padding:10px 18px 16px}
+.qc-wrap{margin-top:48px;border:2px solid var(--accent-line);border-radius:12px;overflow:hidden;background:var(--bg-0);box-shadow:0 0 0 4px var(--accent-soft),0 4px 24px rgba(0,0,0,0.25);position:relative}
+.qc-label{padding:14px 20px 0;display:flex;align-items:center;border-top:3px solid var(--accent)}
+.qc-badge{font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent-bright);background:var(--accent-soft);border:1.5px solid var(--accent-line);border-radius:4px;padding:4px 10px;display:inline-flex;align-items:center;gap:6px}
+.qc-question{padding:12px 20px 4px;font-size:15px;font-weight:600;color:var(--text-0);line-height:1.5}
+.qc-choices{display:flex;flex-direction:column;gap:8px;padding:10px 20px 18px}
 .qc-choice{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:8px;border:1.5px solid var(--line-strong);background:var(--bg-2);color:var(--text-0);font-size:14px;text-align:left;cursor:pointer;transition:all .15s ease;position:relative;width:100%}
 .qc-choice:hover:not(:disabled){border-color:var(--accent-line);background:var(--accent-soft)}
 .qc-choice.correct{border-color:var(--ok)!important;background:rgba(90,210,156,.1)!important;color:var(--ok)}
@@ -39989,7 +39989,7 @@ function QuickCheck({qid,question,choices,correct,explanation}){
   },[ok]);
   return(
     <div className="qc-wrap">
-      <div className="qc-label"><span className="qc-badge">CHECK YOUR UNDERSTANDING</span></div>
+      <div className="qc-label"><span className="qc-badge">✦ CHECK YOUR UNDERSTANDING</span></div>
       <div className="qc-question">{question}</div>
       <div className="qc-choices">
         {choices.map((c,i)=>{
@@ -40007,7 +40007,18 @@ function QuickCheck({qid,question,choices,correct,explanation}){
       </div>
       {done&&<div className={`qc-result ${ok?'correct':'wrong'}`}>
         <span className="qc-result-icon">{ok?'\u2713':'\u2715'}</span>
-        <div><div className="qc-result-title">{ok?'Correct!':'Not quite.'}</div><div className="qc-result-body">{explanation}</div></div>
+        <div>
+          <div className="qc-result-title">{ok?'Correct!':'Not quite.'}</div>
+          <div className="qc-result-body">{explanation}</div>
+          {!ok&&<button
+            onClick={()=>setSel(null)}
+            style={{marginTop:12,padding:'7px 18px',borderRadius:6,fontSize:12,cursor:'pointer',
+              fontFamily:'var(--font-mono)',letterSpacing:'.08em',textTransform:'uppercase',
+              background:'var(--bg-3)',border:'1px solid var(--line-strong)',color:'var(--text-1)',
+              display:'inline-flex',alignItems:'center',gap:7}}>
+            <span style={{fontSize:14}}>↺</span> Try Again
+          </button>}
+        </div>
       </div>}
     </div>
   );
@@ -41079,8 +41090,6 @@ function S_Emergency() {
       </ul>
       <window.QuickCheck qid="emerg" question="During an office evacuation, when should you clock out of Dayforce?" choices={["Immediately before leaving the building","After reaching the muster point outside","Only after reaching the muster point outside — never before leaving","Only if instructed by a supervisor"]} correct={2} explanation="Do not clock out of Dayforce before leaving the building. Evacuate immediately to the muster point, then clock out once you are safely outside."/>
     </div>
-  </div>
-  </div>
   );
 }
 window.S_SafePractices = S_SafePractices;
