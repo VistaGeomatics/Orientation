@@ -39732,22 +39732,6 @@ const SCN_REFUSE = {
   ],
 };
 
-const SCN_DISTRACT = {
-  title: 'Driving a company truck on company business.',
-  nodes: [
-    {
-      text: 'You\'re driving a company truck to a remote site. A client calls your cell. You are 5 minutes from the site. What do you do?',
-      choices: [
-        { label: 'Answer hands-free — it\'s a quick call', next: 1 },
-        { label: 'Pull over safely, then return the call', next: 2 },
-        { label: 'Pick up — you\'re stopped at a red light anyway', next: 3 },
-      ],
-    },
-    { text: 'You answer hands-free.', terminal: true, outcome: 'bad', outcomeText: 'Vista Geomatics policy prohibits hand-held AND hands-free phone use while operating a company vehicle. This applies even on company business.' },
-    { text: 'You pull over safely and return the call.', terminal: true, outcome: 'good', outcomeText: 'Correct. The only acceptable response under Vista Geomatics\' Distracted Driving Policy is to stop the vehicle in a safe location before engaging with any device.' },
-    { text: 'You pick up at the red light.', terminal: true, outcome: 'bad', outcomeText: 'Alberta\'s distracted driving law and Vista Geomatics policy explicitly include red-light stops. The vehicle is still in operation.' },
-  ],
-};
 
 const SCN_FIT = {
   title: 'Pre-shift assessment.',
@@ -39770,7 +39754,6 @@ window.SignIn = SignIn;
 window.HazardHunt = HazardHunt;
 window.Scenario = Scenario;
 window.SCN_REFUSE = SCN_REFUSE;
-window.SCN_DISTRACT = SCN_DISTRACT;
 window.SCN_FIT = SCN_FIT;
 
 </script>
@@ -39780,7 +39763,7 @@ window.SCN_FIT = SCN_FIT;
 const { useState: useStateK, useEffect: useEffectK, useRef: useRefK } = React;
 
 /* Command palette */
-function CommandPalette({ open, onClose, sections, onPick }) {
+function CommandPalette({ open, onClose, sections, completed, onPick }) {
   const [q, setQ] = useStateK('');
   const [idx, setIdx] = useStateK(0);
   const inputRef = useRefK();
@@ -39828,13 +39811,14 @@ function CommandPalette({ open, onClose, sections, onPick }) {
           {filtered.map((s, i) => (
             <div
               key={s.id}
-              className={`cmdk-row ${i === idx ? 'active' : ''}`}
+              className={`cmdk-row ${i === idx ? 'active' : ''} ${completed && completed.has(s.id) ? 'done' : ''}`}
               onClick={() => { onPick(s.id); onClose(); }}
               onMouseEnter={() => setIdx(i)}
             >
               <span className="cmdk-num">{String(s.idx + 1).padStart(2, '0')}</span>
               <span className="cmdk-label">{s.label}</span>
               <span className="cmdk-group">{s.group}</span>
+              {completed && completed.has(s.id) && <span style={{color:'var(--ok)',fontSize:13,marginLeft:'auto',marginRight:4,flexShrink:0}}>✓</span>}
               {i === idx && <span className="cmdk-go">↵</span>}
             </div>
           ))}
@@ -40036,7 +40020,7 @@ function S_EmergencyReportingHazard(){
   const[tab,setTab]=useStateER('remote');
   const tabs=[{id:'remote',label:'Remote and Field'},{id:'alone',label:'Working Alone'},{id:'numbers',label:'Emergency Numbers'},{id:'reporting',label:'Incident Reporting'},{id:'hazard',label:'Hazard Identification'},{id:'viohar',label:'Violence and Harassment'}];
   return(<div className="section-enter"><EyebrowX num="08" label="Emergency - Reporting - Hazard Control"/><h1>Emergency Response, Reporting and Hazard Control</h1><p className="lead">Field preparedness, incident reporting, hazard identification, and workplace conduct.</p><div className="da-tabs">{tabs.map(t=><button key={t.id} className={`da-tab ${tab===t.id?'active':''}`} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
-    {tab==='remote'&&<div className="da-panel"><div className="card-grid-2" style={{marginBottom:18}}><div className="card hud-corner"><span className="tag accent" style={{display:'inline-flex',marginBottom:12}}>Before Leaving</span><ul className="list-clean"><li>All crews must carry <strong>SPOT locators</strong> or approved satellite communication devices.</li><li>Devices must be <strong>fully charged and ready for use</strong> at all times.</li><li>Confirm <strong>exact worksite location</strong> and nearest emergency medical facility.</li></ul></div><div className="card hud-corner"><span className="tag accent" style={{display:'inline-flex',marginBottom:12}}>Both Crew Members Must Know</span><ul className="list-clean"><li>How to <strong>operate the SPOT locator</strong>.</li><li>Each other's <strong>location at all times</strong>.</li><li>Location of the <strong>nearest emergency facility</strong>.</li><li>Established <strong>check-in times and procedures</strong>.</li></ul></div></div><h2>In the Event of an Emergency</h2><div style={{display:'flex',flexDirection:'column',gap:8}}>{['Stop work and assess the situation.','Provide first aid if trained and safe to do so.','Contact emergency services if cell coverage is available.','If no cell service - activate the SPOT locator immediately.','Move to a safe location and wait for assistance.','Do not leave an injured worker alone unless required to obtain help.'].map((s,i)=><div key={i} style={{display:'flex',gap:14,alignItems:'flex-start',padding:'10px 14px',background:'var(--bg-2)',border:'1px solid var(--line)',borderRadius:6}}><span style={{fontFamily:'var(--font-mono)',color:'var(--accent)',fontSize:11,minWidth:22,paddingTop:2}}>{String(i+1).padStart(2,'0')}</span><span style={{fontSize:13.5,color:'var(--text-1)'}}>{s}</span></div>)}</div><QuickCheck qid="remote" question="Your crew is at a remote site with no cell service and a worker is injured. What is the correct first action?" choices={["Drive to find cell service","Activate the SPOT locator immediately","Wait until end of shift to report","Continue working"]} correct={1} explanation="If there is no cell service, activate the SPOT locator immediately to alert emergency services. Do not leave an injured worker alone unless it is the only way to obtain help."/></div>}
+    {tab==='remote'&&<div className="da-panel"><div className="card-grid-2" style={{marginBottom:18}}><div className="card hud-corner"><span className="tag accent" style={{display:'inline-flex',marginBottom:12}}>Before Leaving</span><ul className="list-clean"><li>All crews must carry <strong>SPOT locators</strong> or approved satellite communication devices.</li><li>Devices must be <strong>fully charged and ready for use</strong> at all times.</li><li>Confirm <strong>exact worksite location</strong> and nearest emergency medical facility.</li></ul></div><div className="card hud-corner"><span className="tag accent" style={{display:'inline-flex',marginBottom:12}}>Both Crew Members Must Know</span><ul className="list-clean"><li>How to <strong>operate the SPOT locator</strong>.</li><li>Each other's <strong>location at all times</strong>.</li><li>Location of the <strong>nearest emergency facility</strong>.</li><li>Established <strong>check-in times and procedures</strong>.</li></ul></div></div><h2>In the Event of an Emergency</h2><div style={{display:'flex',flexDirection:'column',gap:8}}>{['Stop work and assess the situation.','Provide first aid if trained and safe to do so.','Contact emergency services if cell coverage is available.','If no cell service - activate the SPOT locator immediately.','Move to a safe location and wait for assistance.','Do not leave an injured worker alone unless required to obtain help.'].map((s,i)=><div key={i} style={{display:'flex',gap:14,alignItems:'flex-start',padding:'10px 14px',background:'var(--bg-2)',border:'1px solid var(--line)',borderRadius:6}}><span style={{fontFamily:'var(--font-mono)',color:'var(--accent)',fontSize:11,minWidth:22,paddingTop:2}}>{String(i+1).padStart(2,'0')}</span><span style={{fontSize:13.5,color:'var(--text-1)'}}>{s}</span></div>)}</div><QuickCheck qid="remote" question="Your crew is at a remote site with no cell service and a worker is seriously injured. What is the correct first action?" choices={["Drive to find cell service","Activate the SPOT locator immediately","Wait until end of shift to report","Continue working"]} correct={1} explanation="If there is no cell service, activate the SPOT locator immediately to alert emergency services. Do not leave an injured worker alone unless it is the only way to obtain help."/></div>}
     {tab==='alone'&&<div className="da-panel"><div className="card" style={{marginBottom:16}}><span className="tag accent" style={{display:'inline-flex',marginBottom:12}}>Requirements</span><ul className="list-clean"><li><strong>Check-in intervals</strong> must be maintained in accordance with company policy.</li><li>Frequency is based on the <strong>level of risk</strong>.</li><li>Maintain communication with a <strong>designated contact</strong> at all times.</li><li>Follow all working-alone procedures in the <strong>HSE Manual</strong>.</li></ul></div><div className="callout callout-danger"><strong>Failure to check in is treated as a potential emergency</strong> and will trigger the company emergency response procedure.</div></div>}
     {tab==='numbers'&&<div className="da-panel"><div className="card hud-corner" style={{marginBottom:18}}><div style={{display:'flex',alignItems:'center',gap:20}}><div style={{fontFamily:'var(--font-mono)',fontSize:48,fontWeight:700,color:'var(--accent-bright)',letterSpacing:2}}>911</div><div><div style={{fontSize:16,fontWeight:600,marginBottom:4}}>Police - Fire - Ambulance</div><div style={{fontSize:13,color:'var(--text-2)'}}>Primary emergency number for all of Alberta.</div></div></div></div><div className="callout">Refer to the <strong>HSE Manual</strong> or <strong>Company Portal</strong> for the full contacts list.</div></div>}
     {tab==='reporting'&&<div className="da-panel"><div className="card-grid-2" style={{marginBottom:18}}><div className="card hud-corner"><span className="tag accent" style={{display:'inline-flex',marginBottom:12}}>What to Report</span><ul className="list-clean">{['Injuries and illnesses (regardless of severity)','Near misses','Property or equipment damage','Hazardous conditions or unsafe acts','Environmental incidents or spills'].map((w,i)=><li key={i}>{w}</li>)}</ul></div><div className="card hud-corner"><span className="tag accent" style={{display:'inline-flex',marginBottom:12}}>How to Report</span><ul className="list-clean"><li>Report <strong>immediately</strong> to your supervisor or the office.</li><li>Complete the <strong>Incident Reporting Form</strong> on the Company Portal.</li><li>Participate in any follow-up investigation.</li></ul></div></div><div className="callout callout-warn"><strong>Do not ignore near misses.</strong> Reporting ensures compliance and prevents future incidents.</div></div>}
@@ -40694,7 +40678,6 @@ function S_Distracted() {
 
 
       <window.QuickCheck qid="distract" question="Your company truck has Bluetooth. Your phone rings while driving. What is the correct action?" choices={["Answer using the truck's Bluetooth hands-free system","Pull over to answer on speakerphone","Pick up the phone and answer hand-held","Ignore it — no calls are ever allowed"]} correct={0} explanation="Hands-free calls via Bluetooth are permitted in vehicles equipped with the system. Speakerphone and hand-held phone use are prohibited at all times while driving."/>
-      <window.Scenario scenario={window.SCN_DISTRACT} />
     </div>
   );
 }
@@ -40946,7 +40929,7 @@ function S_Emergency() {
     'Act in accordance with directions given by emergency control personnel and evacuate the building immediately.',
     'Assist with the general evacuation if directed by emergency control personnel.',
     'Assist with evacuation of disabled occupants and visitors if needed.',
-    'Move calmly to the muster point in the front of the office. DO NOT clock out of Dayforce before leaving the building — do this only after reaching the muster point.',
+    'Move calmly to the muster point in the front of the office. DO NOT clock out of Dayforce — your safety is the only priority. Clock out only once you are confirmed safe outside.',
     'Do not leave the assembly area until the all-clear has been given.',
   ];
 
@@ -41088,7 +41071,7 @@ function S_Emergency() {
         <li>Input from the entire company forms a plan of action — implemented as part of daily operation.</li>
         <li>Vista will participate in any subcontractor's incident investigation and keep all records on file.</li>
       </ul>
-      <window.QuickCheck qid="emerg" question="During an office evacuation, when should you clock out of Dayforce?" choices={["Immediately before leaving the building","After reaching the muster point outside","Only after reaching the muster point outside — never before leaving","Only if instructed by a supervisor"]} correct={2} explanation="Do not clock out of Dayforce before leaving the building. Evacuate immediately to the muster point, then clock out once you are safely outside."/>
+      <window.QuickCheck qid="emerg" question="During an office evacuation, when should you clock out of Dayforce?" choices={["Immediately before leaving the building","After reaching the muster point outside","You don't — get to safety first, Dayforce is not a priority","Only if instructed by your supervisor"]} correct={2} explanation="Do not clock out of Dayforce during an evacuation. Your safety is the only priority. Leave immediately, get to the muster point, and clock out only once you are confirmed safe outside."/>
     </div>
   );
 }
@@ -41140,7 +41123,7 @@ const QUIZ_QUESTIONS = [
     answer: 2, explain: 'All remote workers must carry a SPOT locator at all times. It must be tested at the beginning of every field day through a crew check-in before leaving the yard.' },
 ];
 
-function S_Quiz({ answers, submitted, locked, onAnswer, onSubmit, onRetry, onReviewQuestion }) {
+function S_Quiz({ answers, submitted, locked, onAnswer, onSubmit, onRetry, onReviewQuestion, onPick }) {
   const total = QUIZ_QUESTIONS.length;
   const answered = answers.filter(a => a !== null).length;
   const correct = answers.reduce((acc, a, i) => acc + (a !== null && a === QUIZ_QUESTIONS[i].answer ? 1 : 0), 0);
@@ -41178,9 +41161,18 @@ function S_Quiz({ answers, submitted, locked, onAnswer, onSubmit, onRetry, onRev
             </button>
           )}
           {passed && (
-            <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 18, marginBottom: 0 }}>
-              View your certificate from the sidebar.
-            </p>
+            <div style={{marginTop:18,display:'flex',flexDirection:'column',alignItems:'center',gap:10}}>
+              <p style={{fontSize:13,color:'var(--text-2)',margin:0}}>
+                Orientation complete — your certificate is ready.
+              </p>
+              <button
+                className="btn"
+                style={{fontSize:14,padding:'10px 28px',marginTop:4}}
+                onClick={()=>onPick&&onPick('cert')}
+              >
+                View Certificate <span className="btn-arrow">→</span>
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -41620,6 +41612,7 @@ function App() {
       const next = [...answers]; next[qi] = null; setAnswers(next);
     },
     user, score, passed,
+    onPick: go,
   };
 
   // Intro video gate (first load only — sessionStorage)
@@ -41758,6 +41751,7 @@ function App() {
         open={cmdkOpen}
         onClose={() => setCmdkOpen(false)}
         sections={cmdkSections}
+        completed={completed}
         onPick={go}
       />
 
