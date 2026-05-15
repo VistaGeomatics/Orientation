@@ -39678,26 +39678,15 @@ const{useState:useStateV,useEffect:useEffectV,useRef:useRefV}=React;
 const GITHUB_VIDEO_URL='https://raw.githubusercontent.com/VistaGeomatics/Orientation/main/Scene%208-2.mp4';
 function IntroVideo({onDone}){
   const[hiding,setHiding]=useStateV(false);
-  const[ready,setReady]=useStateV(false);
-  const videoRef=useRefV();
-  function finish(){if(hiding)return;setHiding(true);setTimeout(onDone,700);}
   useEffectV(()=>{
-    const v=videoRef.current;if(!v)return;
-    v.addEventListener('error',finish);
-    v.addEventListener('playing',()=>setReady(true));
-    v.addEventListener('canplaythrough',()=>setReady(true));
-    v.play().catch(finish);
-    return()=>v.removeEventListener('error',finish);
+    const t=setTimeout(()=>{setHiding(true);setTimeout(onDone,400);},800);
+    return()=>clearTimeout(t);
   },[]);
   return(
-    <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',alignItems:'center',justifyContent:'center',opacity:hiding?0:1,transition:'opacity 0.7s ease'}}>
-      <video ref={videoRef} src={GITHUB_VIDEO_URL}
-        autoPlay muted playsInline onEnded={finish}
-        style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',opacity:ready?1:0,transition:'opacity 0.5s ease'}}/>
-      {ready&&<button onClick={e=>{e.stopPropagation();finish();}}
-        style={{position:'absolute',bottom:28,right:28,background:'rgba(0,0,0,.55)',border:'1px solid rgba(255,255,255,.28)',color:'#fff',padding:'9px 22px',borderRadius:8,fontSize:14,cursor:'pointer',zIndex:2}}>
-        Skip ×
-      </button>}
+    <div style={{position:'fixed',inset:0,zIndex:9999,background:'#000',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:16,opacity:hiding?0:1,transition:'opacity 0.4s ease'}}>
+      <div style={{width:36,height:36,border:'3px solid #1a3a4a',borderTop:'3px solid #4ea7c8',borderRadius:'50%',animation:'vg-spin 0.9s linear infinite'}}/>
+      <span style={{fontFamily:'monospace',fontSize:12,letterSpacing:'0.2em',color:'#4ea7c8',textTransform:'uppercase'}}>Loading…</span>
+      <style>{`@keyframes vg-spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }
