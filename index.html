@@ -40458,6 +40458,14 @@ function S_DrugAlcohol({ackName,ackChecked,onAckName,onAckCheck}){
       <h1>Alcohol &amp; Drug Policy</h1>
       <p className="lead">Vista Geomatics is committed to a workplace free from unauthorized substances. This policy applies to all workers, subcontractors, vendors, and visitors on all sites at all times.</p>
 
+      <div style={{display:'flex',alignItems:'flex-start',gap:14,background:'rgba(78,167,200,0.1)',border:'1.5px solid var(--accent-line)',borderRadius:10,padding:'14px 18px',marginBottom:24}}>
+        <span style={{fontSize:20,flexShrink:0}}>📋</span>
+        <div>
+          <strong style={{fontSize:14,color:'var(--accent-bright)',display:'block',marginBottom:4}}>Review all tabs before signing</strong>
+          <span style={{fontSize:13,color:'var(--text-2)',lineHeight:1.6}}>Use the tabs below to read each section of the policy — <em>Overview, Definitions, Responsibility, Prohibited, Prescription Drugs, Social Situations, Testing, Detection Levels, Consequences,</em> and <em>Rehabilitation</em>. Once all tabs have been reviewed, the <strong>Acknowledgement</strong> tab will unlock and you can sign off.</span>
+        </div>
+      </div>
+
       {/* Progress indicator */}
       <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:20,flexWrap:'wrap'}}>
         {TAB_ORDER.map((t,i)=>{
@@ -40994,7 +41002,6 @@ function S_Emergency() {
       <h2>Remote Worksite — SPOT Locator Procedure</h2>
 
       <div className="spot-section">
-        {{/* Full-width SPOT image — no surrounding card */}}
         <div style={{width:"100%",marginBottom:20}}>
           <img src={(window.__resources&&window.__resources['assets/gps.png'])||''}
             alt="SPOT Gen4 — button labels diagram"
@@ -41003,7 +41010,6 @@ function S_Emergency() {
           />
         </div>
 
-        {{/* Device info strip */}}
         <div style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap",marginBottom:20,
           padding:"14px 18px",background:"var(--bg-2)",border:"1px solid var(--line-strong)",
           borderRadius:10}}>
@@ -41073,6 +41079,8 @@ function S_Emergency() {
       </ul>
       <window.QuickCheck qid="emerg" question="During an office evacuation, when should you clock out of Dayforce?" choices={["Immediately before leaving the building","After reaching the muster point outside","Only after reaching the muster point outside — never before leaving","Only if instructed by a supervisor"]} correct={2} explanation="Do not clock out of Dayforce before leaving the building. Evacuate immediately to the muster point, then clock out once you are safely outside."/>
     </div>
+  </div>
+  </div>
   );
 }
 window.S_SafePractices = S_SafePractices;
